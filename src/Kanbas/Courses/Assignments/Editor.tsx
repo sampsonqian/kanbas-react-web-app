@@ -1,17 +1,33 @@
-import React from 'react';
+import React from "react";
+import { useParams, Link } from "react-router-dom";
+import * as db from "../../Database";
 
 export default function AssignmentEditor() {
+  const { cid, aid } = useParams();
+  const assignments = db.assignments;
+  const assignment = assignments.find(
+    (assignment) => String(assignment._id) === String(aid)
+  );
+
   return (
     <div id="wd-assignments-editor" className="container mt-4">
       {/* Assignment Name */}
       <div className="mb-3">
-        <label htmlFor="wd-name"><b>Assignment Name</b></label>
-        <input id="wd-name" className="form-control" value="A1 - ENV + HTML" />
+        <label htmlFor="wd-name">
+          <b>Assignment Name</b>
+        </label>
+        <input
+          id="wd-name"
+          className="form-control"
+          value={assignment?.title}
+        />
       </div>
 
       {/* Description */}
       <div className="mb-3">
-        <label htmlFor="wd-description"><b>Description</b></label>
+        <label htmlFor="wd-description">
+          <b>Description</b>
+        </label>
         <textarea
           id="wd-description"
           className="form-control"
@@ -23,17 +39,26 @@ export default function AssignmentEditor() {
       {/* Points */}
       <div className="row mb-3">
         <div className="col-md-2 text-end">
-          <label htmlFor="wd-points"><b>Points</b></label>
+          <label htmlFor="wd-points">
+            <b>Points</b>
+          </label>
         </div>
         <div className="col-md-10">
-          <input id="wd-points" type="number" className="form-control" value={100} />
+          <input
+            id="wd-points"
+            type="number"
+            className="form-control"
+            value={100}
+          />
         </div>
       </div>
 
       {/* Assignment Group */}
       <div className="row mb-3">
         <div className="col-md-2 text-end">
-          <label htmlFor="wd-group"><b>Assignment Group</b></label>
+          <label htmlFor="wd-group">
+            <b>Assignment Group</b>
+          </label>
         </div>
         <div className="col-md-10">
           <select id="wd-group" className="form-control">
@@ -48,7 +73,9 @@ export default function AssignmentEditor() {
       {/* Display Grade As */}
       <div className="row mb-3">
         <div className="col-md-2 text-end">
-          <label htmlFor="wd-display-grade-as"><b>Display Grade as</b></label>
+          <label htmlFor="wd-display-grade-as">
+            <b>Display Grade as</b>
+          </label>
         </div>
         <div className="col-md-10">
           <select id="wd-display-grade-as" className="form-control">
@@ -62,7 +89,9 @@ export default function AssignmentEditor() {
       {/* Submission Type */}
       <div className="row mb-3">
         <div className="col-md-2 text-end">
-          <label htmlFor="wd-submission-type"><b>Submission Type</b></label>
+          <label htmlFor="wd-submission-type">
+            <b>Submission Type</b>
+          </label>
         </div>
         <div className="col-md-10">
           <select id="wd-submission-type" className="form-control">
@@ -75,27 +104,56 @@ export default function AssignmentEditor() {
       {/* Group: Assign to, Due, Available from, Until */}
       <div className="row mb-3">
         <div className="col-md-2 text-end">
-          <label htmlFor="wd-assign-to"><b>Assign</b></label>
+          <label htmlFor="wd-assign-to">
+            <b>Assign</b>
+          </label>
         </div>
         <div className="col-md-10 border p-3">
           <div>
-            <label htmlFor="wd-assign-to"><b>Assign to</b></label>
-            <input id="wd-assign-to" className="form-control" value="Everyone" />
+            <label htmlFor="wd-assign-to">
+              <b>Assign to</b>
+            </label>
+            <input
+              id="wd-assign-to"
+              className="form-control"
+              value="Everyone"
+            />
           </div>
 
           <div className="mt-3">
-            <label htmlFor="wd-due-date"><b>Due</b></label>
-            <input type="date" id="wd-due-date" className="form-control" value="2025-05-13" />
+            <label htmlFor="wd-due-date">
+              <b>Due</b>
+            </label>
+            <input
+              type="date"
+              id="wd-due-date"
+              className="form-control"
+              value="2025-05-13"
+            />
           </div>
 
           <div className="row mt-3">
             <div className="col-md-6">
-              <label htmlFor="wd-available-from"><b>Available from</b></label>
-              <input type="date" id="wd-available-from" className="form-control" value="2024-05-26" />
+              <label htmlFor="wd-available-from">
+                <b>Available from</b>
+              </label>
+              <input
+                type="date"
+                id="wd-available-from"
+                className="form-control"
+                value="2024-05-26"
+              />
             </div>
             <div className="col-md-6">
-              <label htmlFor="wd-available-until"><b>Until</b></label>
-              <input type="date" id="wd-available-until" className="form-control" value="2024-05-20" />
+              <label htmlFor="wd-available-until">
+                <b>Until</b>
+              </label>
+              <input
+                type="date"
+                id="wd-available-until"
+                className="form-control"
+                value="2024-05-20"
+              />
             </div>
           </div>
         </div>
@@ -106,8 +164,20 @@ export default function AssignmentEditor() {
         <div className="col-md-12">
           <hr />
           <div className="float-end">
-            <button className="btn btn-secondary me-2">Cancel</button>
-            <button className="btn btn-danger">Save</button>
+            <Link
+              to={`/Kanbas/Courses/${cid}/Assignments`}
+              className="btn btn-secondary me-2"
+            >
+              Cancel
+            </Link>
+            <Link
+              to={`/Kanbas/Courses/${cid}/Assignments`}
+              className="btn btn-danger"
+            >
+              Save
+            </Link>
+
+            
           </div>
         </div>
       </div>

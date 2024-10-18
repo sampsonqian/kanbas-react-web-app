@@ -4,7 +4,12 @@ import AssignmentsButtons from "./AssignmentsButtons";
 import { BsGripVertical } from "react-icons/bs";
 import { RxTriangleDown } from "react-icons/rx";
 import { MdOutlineAssignment } from "react-icons/md";
+import { useParams, Link } from "react-router-dom";
+import * as db from "../../Database";
 export default function Assignments() {
+  const { cid } = useParams();
+  const assignments = db.assignments;
+
   return (
     <div id="wd-assignments">
       <AssignmentsTopbar />
@@ -20,88 +25,39 @@ export default function Assignments() {
             ASSIGNMENTS
             <AssignmentsButtons />
           </div>
-          <ul className="wd-lessons list-group rounded-0">
-            <li className="wd-lesson list-group-item p-3 ps-1 d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center">
-                <BsGripVertical className="me-2 fs-3" />
-                <MdOutlineAssignment className="me-3 fs-3 text-success" />
-                <div>
-                  <a
-                    className="wd-assignment-link text-black fw-bold"
-                    href="#/Kanbas/Courses/1234/Assignments/123"
-                    style={{ textDecoration: "none" }}
-                  >
-                    A1
-                  </a>
-                  <br />
-                  <div className="fs-6">
-                    <span className="text-danger fs-6">Multiple Modules</span> |{" "}
-                    <b>Not available until</b> May 6 at 12:00am |
-                    <br />
-                    <b>Due</b> May 13 at 11:59pm | 100 pts
+          {assignments
+            .filter((assignment: any) => assignment.course === cid)
+            .map((assignment: any) => (
+              <ul className="wd-lessons list-group rounded-0">
+                <li className="wd-lesson list-group-item p-3 ps-1 d-flex justify-content-between align-items-center">
+                  <div className="d-flex align-items-center">
+                    <BsGripVertical className="me-2 fs-3" />
+                    <MdOutlineAssignment className="me-3 fs-3 text-success" />
+                    <div>
+                      <Link
+                        to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
+                        className="wd-assignment-link text-black fw-bold"
+                        style={{ textDecoration: "none" }}
+                      >
+                        {assignment.title}
+                      </Link>
+                      <br />
+                      <div className="fs-6">
+                        <span className="text-danger fs-6">
+                          Multiple Modules
+                        </span>{" "}
+                        | <b>Not available until</b> {assignment.start_time} |
+                        <br />
+                        <b>Due</b> {assignment.due_time} | {assignment.points}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div>
-                <AssignmentControlButtons />
-              </div>
-            </li>
-
-            <li className="wd-lesson list-group-item p-3 ps-1 d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center">
-                <BsGripVertical className="me-2 fs-3" />
-                <MdOutlineAssignment className="me-3 fs-3 text-success" />
-                <div>
-                  <a
-                    className="wd-assignment-link text-black fw-bold"
-                    href="#/Kanbas/Courses/1234/Assignments/124"
-                    style={{ textDecoration: "none" }}
-                  >
-                    A2
-                  </a>
-                  <br />
-                  <div className="fs-6">
-                    <span className="text-danger fs-6">Multiple Modules</span> |{" "}
-                    <b>Not available until</b> May 13 at 12:00am |
-                    <br />
-                    <b>Due</b> May 20 at 11:59pm | 100 pts
+                  <div>
+                    <AssignmentControlButtons />
                   </div>
-                </div>
-              </div>
-
-              <div>
-                <AssignmentControlButtons />
-              </div>
-            </li>
-
-            <li className="wd-lesson list-group-item p-3 ps-1 d-flex justify-content-between align-items-center">
-              {/* Left section: Icons and Text */}
-              <div className="d-flex align-items-center">
-                <BsGripVertical className="me-2 fs-3" />
-                <MdOutlineAssignment className="me-3 fs-3 text-success" />
-                <div>
-                  <a
-                    className="wd-assignment-link text-black fw-bold"
-                    href="#/Kanbas/Courses/1234/Assignments/125"
-                    style={{ textDecoration: "none" }}
-                  >
-                    A3
-                  </a>
-                  <br />
-                  <div className="fs-6">
-                    <span className="text-danger fs-6">Multiple Modules</span> |{" "}
-                    <b>Not available until</b> May 20 at 12:00am |
-                    <br />
-                    <b>Due</b> May 27 at 11:59pm | 100 pts
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <AssignmentControlButtons />
-              </div>
-            </li>
-          </ul>
+                </li>
+              </ul>
+            ))}
         </li>
       </ul>
     </div>
