@@ -6,13 +6,68 @@ import { RxTriangleDown } from "react-icons/rx";
 import { MdOutlineAssignment } from "react-icons/md";
 import { useParams, Link } from "react-router-dom";
 import * as db from "../../Database";
+import {
+  addAssignment,
+  editAssignment,
+  updateAssignment,
+  deleteAssignment,
+} from "./reducer";
+import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+
 export default function Assignments() {
-  const { cid } = useParams();
-  const assignments = db.assignments;
+  const { aid, cid } = useParams();
+
+  const [assignments, setAssignments] = useState<any[]>(db.assignments);
+  const [assignmentName, setAssignmentName] = useState("");
+  const [assignmentDescription, setAssignmentDescription] = useState("");
+  const [assignmentPoints, setAssignmentPoints] = useState(100);
+  const [assignmentDueDate, setAssignmentDueDate] = useState("");
+  const [availableFromDate, setAvailableFromDate] = useState("");
+  const [availableUntilDate, setAvailableUntilDate] = useState("");
+  const addAssignment = () => {
+    setAssignments([
+      ...assignments,
+      {
+        _id: new Date().getTime().toString(),
+        name: assignmentName,
+        course: cid,
+        description: assignmentDescription,
+        points: assignmentPoints,
+        dueDate: assignmentDueDate,
+        availableFromDate: availableFromDate,
+        availableUntilDate: availableUntilDate,
+      },
+    ]);
+    setAssignmentName("");
+    setAssignmentDescription(""),
+      setAssignmentPoints(100),
+      setAssignmentDueDate(""),
+      setAvailableFromDate(""),
+      setAvailableUntilDate("");
+  };
+
+  const deleteAssignment = (assignmentId: string) => {
+    setAssignments(assignments.filter((a) => a._id !== assignmentId));
+  };
 
   return (
     <div id="wd-assignments">
-      <AssignmentsTopbar />
+      <AssignmentsTopbar
+        assignmentName={assignmentName}
+        setAssignmentName={setAssignmentName}
+        assignmentDescription={assignmentDescription}
+        setAssignmentDescription={setAssignmentDescription}
+        assignmentPoints={assignmentPoints}
+        setAssignmentPoints={setAssignmentPoints}
+        assignmentDueDate={assignmentDueDate}
+        setAssignmentDueDate={setAssignmentDueDate}
+        availableFromDate={availableFromDate}
+        setAvailableFromDate={setAvailableFromDate}
+        availableUntilDate={availableUntilDate}
+        setAvailableUntilDate={setAvailableUntilDate}
+        addAssignment={addAssignment}
+      />
       <br />
       <br />
       <br />
@@ -53,7 +108,10 @@ export default function Assignments() {
                     </div>
                   </div>
                   <div>
-                    <AssignmentControlButtons />
+                    <AssignmentControlButtons
+                      assignmentId={assignment._id}
+                      deleteAssignment={deleteAssignment}
+                    />
                   </div>
                 </li>
               </ul>
