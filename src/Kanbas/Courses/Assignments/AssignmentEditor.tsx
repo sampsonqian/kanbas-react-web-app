@@ -1,64 +1,60 @@
 import React, { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import * as db from "../../Database";
 
 export default function AssignmentEditor({
-  assignmentName,
-  setAssignmentName,
-  assignmentDescription,
-  setAssignmentDescription,
-  assignmentPoints,
-  setAssignmentPoints,
-  assignmentDueDate,
-  setAssignmentDueDate,
-  availableFromDate,
-  setAvailableFromDate,
-  availableUntilDate,
-  setAvailableUntilDate,
+  assignmentFields,
+  setAssignmentField,
   addAssignment,
-  updateAssignment
+  updateAssignment,
 }: {
-  assignmentName: string;
-  setAssignmentName: (name: string) => void;
-  assignmentDescription: string;
-  setAssignmentDescription: (description: string) => void;
-  assignmentPoints: number;
-  setAssignmentPoints: (points: number) => void;
-  assignmentDueDate: string;
-  setAssignmentDueDate: (date: string) => void;
-  availableFromDate: string;
-  setAvailableFromDate: (date: string) => void;
-  availableUntilDate: string;
-  setAvailableUntilDate: (date: string) => void;
+  assignmentFields: {
+    title: string;
+    description: string;
+    points: number;
+    dueDate: string;
+    availableFromDate: string;
+    availableUntilDate: string;
+  };
+  setAssignmentField: (field: string, value: any) => void;
   addAssignment: () => void;
   updateAssignment: (aid: string) => void;
 }) {
-  const { aid } = useParams<{ aid: string }>();
+  const { cid, aid } = useParams<{ cid: string; aid: string }>();
+  const navigate = useNavigate();
 
+  // Check if `aid` and `cid` are correctly passed
+  console.log("Rendering AssignmentEditor with aid:", aid, "and cid:", cid);
+
+  
   // Load assignment data if editing an existing assignment
   useEffect(() => {
     if (aid) {
       const assignment = db.assignments.find((a) => a._id === aid);
       if (assignment) {
-        setAssignmentName(assignment.title);
-        setAssignmentDescription(assignment.description);
-        setAssignmentPoints(assignment.points);
-        setAssignmentDueDate(assignment.dueDate);
-        setAvailableFromDate(assignment.availableFromDate);
-        setAvailableUntilDate(assignment.availableUntilDate);
+        setAssignmentField("title", assignment.title);
+        setAssignmentField("description", assignment.description);
+        setAssignmentField("points", assignment.points);
+        setAssignmentField("dueDate", assignment.dueDate);
+        setAssignmentField("availableFromDate", assignment.availableFromDate);
+        setAssignmentField("availableUntilDate", assignment.availableUntilDate);
+      } else {
+        console.error("No assignment found with the given aid:", aid);
       }
     }
-  }, [aid, setAssignmentName, setAssignmentDescription, setAssignmentPoints, setAssignmentDueDate, setAvailableFromDate, setAvailableUntilDate]);
+  }, [aid, setAssignmentField]);
 
   const handleSave = () => {
     if (aid) {
-      // If editing, update the existing assignment
       updateAssignment(aid);
     } else {
-      // If adding a new assignment
       addAssignment();
     }
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
   };
+
+
+
   return (
     <div
       id="wd-add-assignment-dialog"
@@ -85,8 +81,8 @@ export default function AssignmentEditor({
                 <input
                   id="wd-name"
                   className="form-control"
-                  value={assignmentName}
-                  onChange={(e) => setAssignmentName(e.target.value)}
+                  value={assignmentFields.title}
+                  onChange={(e) => setAssignmentField("title", e.target.value)}
                 />
               </div>
 
@@ -99,8 +95,10 @@ export default function AssignmentEditor({
                   id="wd-description"
                   className="form-control"
                   rows={5}
-                  value={assignmentDescription}
-                  onChange={(e) => setAssignmentDescription(e.target.value)}
+                  value={assignmentFields.description}
+                  onChange={(e) =>
+                    setAssignmentField("description", e.target.value)
+                  }
                 />
               </div>
 
@@ -116,9 +114,9 @@ export default function AssignmentEditor({
                     id="wd-points"
                     type="number"
                     className="form-control"
-                    value={assignmentPoints}
+                    value={assignmentFields.points}
                     onChange={(e) =>
-                      setAssignmentPoints(Number(e.target.value))
+                      setAssignmentField("points", Number(e.target.value))
                     }
                   />
                 </div>
@@ -140,8 +138,10 @@ export default function AssignmentEditor({
                     type="date"
                     id="wd-due-date"
                     className="form-control"
-                    value={assignmentDueDate}
-                    onChange={(e) => setAssignmentDueDate(e.target.value)}
+                    value={assignmentFields.dueDate}
+                    onChange={(e) =>
+                      setAssignmentField("dueDate", e.target.value)
+                    }
                   />
                 </div>
 
@@ -154,8 +154,10 @@ export default function AssignmentEditor({
                       type="date"
                       id="wd-available-from"
                       className="form-control"
-                      value={availableFromDate}
-                      onChange={(e) => setAvailableFromDate(e.target.value)}
+                      value={assignmentFields.availableFromDate}
+                      onChange={(e) =>
+                        setAssignmentField("availableFromDate", e.target.value)
+                      }
                     />
                   </div>
                   <div className="col-md-6">
@@ -166,8 +168,10 @@ export default function AssignmentEditor({
                       type="date"
                       id="wd-available-until"
                       className="form-control"
-                      value={availableUntilDate}
-                      onChange={(e) => setAvailableUntilDate(e.target.value)}
+                      value={assignmentFields.availableUntilDate}
+                      onChange={(e) =>
+                        setAssignmentField("availableUntilDate", e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -180,6 +184,7 @@ export default function AssignmentEditor({
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
+                onClick={() => navigate(`/Kanbas/Courses/Assignments`)}
               >
                 Cancel
               </button>

@@ -1,39 +1,25 @@
 import { FaPlus } from "react-icons/fa6";
 import { CiSearch } from "react-icons/ci";
 import AssignmentEditor from "./AssignmentEditor";
+
 export default function AssignmentsTopbar({
-  assignmentName,
-  setAssignmentName,
-  assignmentDescription,
-  setAssignmentDescription,
-  assignmentPoints,
-  setAssignmentPoints,
-  assignmentDueDate,
-  setAssignmentDueDate,
-  availableFromDate,
-  setAvailableFromDate,
-  availableUntilDate,
-  setAvailableUntilDate,
+  assignmentFields,
+  setAssignmentField,
   addAssignment,
   updateAssignment,
 }: {
-  assignmentName: string;
-  setAssignmentName: (name: string) => void;
-  assignmentDescription: string;
-  setAssignmentDescription: (description: string) => void;
-  assignmentPoints: number;
-  setAssignmentPoints: (points: number) => void;
-  assignmentDueDate: string;
-  setAssignmentDueDate: (date: string) => void;
-  availableFromDate: string;
-  setAvailableFromDate: (date: string) => void;
-  availableUntilDate: string;
-  setAvailableUntilDate: (date: string) => void;
+  assignmentFields: {
+    title: string;
+    description: string;
+    points: number;
+    dueDate: string;
+    availableFromDate: string;
+    availableUntilDate: string;
+  };
+  setAssignmentField: (field: string, value: any) => void;
   addAssignment: () => void;
   updateAssignment: (aid: string) => void;
 }) {
-  
-
   return (
     <div id="wd-assignments-topbar" className="text-nowrap">
       <div className="btn btn-lg me-1 float-start border">
@@ -69,18 +55,8 @@ export default function AssignmentsTopbar({
         Assignment
       </button>
       <AssignmentEditor
-        assignmentName={assignmentName}
-        setAssignmentName={setAssignmentName}
-        assignmentDescription={assignmentDescription}
-        setAssignmentDescription={setAssignmentDescription}
-        assignmentPoints={assignmentPoints}
-        setAssignmentPoints={setAssignmentPoints}
-        assignmentDueDate={assignmentDueDate}
-        setAssignmentDueDate={setAssignmentDueDate}
-        availableFromDate={availableFromDate}
-        setAvailableFromDate={setAvailableFromDate}
-        availableUntilDate={availableUntilDate}
-        setAvailableUntilDate={setAvailableUntilDate}
+        assignmentFields={assignmentFields}
+        setAssignmentField={setAssignmentField}
         addAssignment={addAssignment}
         updateAssignment={updateAssignment}
       />

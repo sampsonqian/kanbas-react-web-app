@@ -4,70 +4,60 @@ import AssignmentsButtons from "./AssignmentsButtons";
 import { BsGripVertical } from "react-icons/bs";
 import { RxTriangleDown } from "react-icons/rx";
 import { MdOutlineAssignment } from "react-icons/md";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import * as db from "../../Database";
-import {
-  addAssignment,
-  updateAssignment,
-  deleteAssignment,
-} from "./reducer";
-import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 
 export default function Assignments() {
-  const { cid } = useParams();
+  const {aid, cid } = useParams();
   const navigate = useNavigate();
 
   const [assignments, setAssignments] = useState<any[]>(db.assignments);
-  const [assignmentName, setAssignmentName] = useState("");
-  const [assignmentDescription, setAssignmentDescription] = useState("");
-  const [assignmentPoints, setAssignmentPoints] = useState(100);
-  const [assignmentDueDate, setAssignmentDueDate] = useState("");
-  const [availableFromDate, setAvailableFromDate] = useState("");
-  const [availableUntilDate, setAvailableUntilDate] = useState("");
+  const [assignmentFields, setAssignmentFields] = useState({
+    title: "",
+    description: "",
+    points: 100,
+    dueDate: "",
+    availableFromDate: "",
+    availableUntilDate: "",
+  });
+
+  // Update a specific field within the assignmentFields object
+  const setAssignmentField = (field: string, value: any) => {
+    setAssignmentFields((prevFields) => ({
+      ...prevFields,
+      [field]: value,
+    }));
+  };
+
   const addAssignment = () => {
-    setAssignments([
-      ...assignments,
-      {
-        _id: new Date().getTime().toString(),
-        title: assignmentName,
-        course: cid,
-        description: assignmentDescription,
-        points: assignmentPoints,
-        due_time: assignmentDueDate,
-        availableFromDate: availableFromDate,
-        availableUntilDate: availableUntilDate,
-      },
-    ]);
+    const newAssignment = {
+      _id: new Date().getTime().toString(),
+      course: cid,
+      ...assignmentFields,
+    };
+    setAssignments([...assignments, newAssignment]);
     resetFields();
   };
 
   const updateAssignment = (aid: string) => {
     setAssignments(
       assignments.map((assignment) =>
-        assignment._id === aid
-          ? {
-              ...assignment,
-              title: assignmentName,
-              description: assignmentDescription,
-              points: assignmentPoints,
-              due_time: assignmentDueDate,
-              availableFromDate: availableFromDate,
-              availableUntilDate: availableUntilDate,
-            }
-          : assignment
+        assignment._id === aid ? { ...assignment, ...assignmentFields } : assignment
       )
     );
     resetFields();
   };
 
   const resetFields = () => {
-    setAssignmentName("");
-    setAssignmentDescription("");
-    setAssignmentPoints(100);
-    setAssignmentDueDate("");
-    setAvailableFromDate("");
-    setAvailableUntilDate("");
+    setAssignmentFields({
+      title: "",
+      description: "",
+      points: 100,
+      dueDate: "",
+      availableFromDate: "",
+      availableUntilDate: "",
+    });
   };
 
   const deleteAssignment = (assignmentId: string) => {
@@ -75,25 +65,15 @@ export default function Assignments() {
   };
 
   const handleEditAssignment = (assignmentId: string) => {
-    // Navigate to AssignmentEditor with the assignment ID
+    console.log("Navigating to assignment with ID:", assignmentId); 
     navigate(`/Kanbas/Courses/${cid}/Assignments/${assignmentId}/edit`);
   };
 
   return (
     <div id="wd-assignments">
       <AssignmentsTopbar
-        assignmentName={assignmentName}
-        setAssignmentName={setAssignmentName}
-        assignmentDescription={assignmentDescription}
-        setAssignmentDescription={setAssignmentDescription}
-        assignmentPoints={assignmentPoints}
-        setAssignmentPoints={setAssignmentPoints}
-        assignmentDueDate={assignmentDueDate}
-        setAssignmentDueDate={setAssignmentDueDate}
-        availableFromDate={availableFromDate}
-        setAvailableFromDate={setAvailableFromDate}
-        availableUntilDate={availableUntilDate}
-        setAvailableUntilDate={setAvailableUntilDate}
+        assignmentFields={assignmentFields}
+        setAssignmentField={setAssignmentField}
         addAssignment={addAssignment}
         updateAssignment={updateAssignment}
       />
@@ -112,29 +92,30 @@ export default function Assignments() {
           {assignments
             .filter((assignment: any) => assignment.course === cid)
             .map((assignment: any) => (
-              <ul className="wd-lessons list-group rounded-0">
+             
+              <ul key={assignment._id} className="wd-lessons list-group rounded-0">
                 <li className="wd-lesson list-group-item p-3 ps-1 d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center">
                     <BsGripVertical className="me-2 fs-3" />
                     <MdOutlineAssignment className="me-3 fs-3 text-success" />
                     <div>
-                      <span
-                        onClick={() => handleEditAssignment(assignment._id)}
+                    <Link
+                        to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}/edit`}
+                        onClick={() => console.log("Clicked assignment ID:", assignment._id)}
                         className="wd-assignment-link text-black fw-bold"
-                        style={{ textDecoration: "none", cursor: "pointer" }}
+                        style={{ textDecoration: "none" }}
                       >
                         {assignment.title}
-                      </span>
+                      </Link>
                       <br />
                       <div className="fs-6">
                         <span className="text-danger fs-6">
-                         { assignment.modules}
+                          {assignment.modules}
                         </span>{" "}
                         | <b>Not available until</b>{" "}
                         {assignment.availableFromDate} |
                         <br />
-                        <b>Due</b> {assignment.dueDate} | {assignment.points}{" "}
-                        pts
+                        <b>Due</b> {assignment.dueDate} | {assignment.points} pts
                       </div>
                     </div>
                   </div>

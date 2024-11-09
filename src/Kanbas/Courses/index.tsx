@@ -4,70 +4,62 @@ import Home from "./Home";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/AssignmentEditor";
 import PeopleTable from "./People/Table";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useParams,
-  useLocation,
-  useNavigate,
-} from "react-router";
+import { Navigate, Route, Routes, useParams, useLocation } from "react-router";
 import { FaAlignJustify } from "react-icons/fa";
 import { useState } from "react";
 import * as db from "../Database";
+
 export default function Courses({ courses }: { courses: any[] }) {
   const { cid } = useParams();
   const course = courses.find((course) => course._id === cid);
   const { pathname } = useLocation();
 
   const [assignments, setAssignments] = useState<any[]>(db.assignments);
-  const [assignmentName, setAssignmentName] = useState("");
-  const [assignmentDescription, setAssignmentDescription] = useState("");
-  const [assignmentPoints, setAssignmentPoints] = useState(100);
-  const [assignmentDueDate, setAssignmentDueDate] = useState("");
-  const [availableFromDate, setAvailableFromDate] = useState("");
-  const [availableUntilDate, setAvailableUntilDate] = useState("");
-  const addAssignment = () => {
-    setAssignments([
-      ...assignments,
-      {
-        _id: new Date().getTime().toString(),
-        title: assignmentName,
-        course: cid,
-        description: assignmentDescription,
-        points: assignmentPoints,
-        dueDate: assignmentDueDate,
-        availableFromDate: availableFromDate,
-        availableUntilDate: availableUntilDate,
-      },
-    ]);
+  const [assignmentFields, setAssignmentFields] = useState({
+    title: "",
+    description: "",
+    points: 100,
+    dueDate: "",
+    availableFromDate: "",
+    availableUntilDate: "",
+  });
+
+  // Function to update a specific field in assignmentFields
+  const setAssignmentField = (field: string, value: any) => {
+    setAssignmentFields((prevFields) => ({
+      ...prevFields,
+      [field]: value,
+    }));
   };
+
+  const addAssignment = () => {
+    const newAssignment = {
+      _id: new Date().getTime().toString(),
+      course: cid,
+      ...assignmentFields,
+    };
+    setAssignments([...assignments, newAssignment]);
+    resetFields();
+  };
+
   const updateAssignment = (aid: string) => {
     setAssignments(
       assignments.map((assignment) =>
-        assignment._id === aid
-          ? {
-              ...assignment,
-              title: assignmentName,
-              description: assignmentDescription,
-              points: assignmentPoints,
-              due_time: assignmentDueDate,
-              start_time: availableFromDate,
-              availableUntilDate: availableUntilDate,
-            }
-          : assignment
+        assignment._id === aid ? { ...assignment, ...assignmentFields } : assignment
       )
     );
     resetFields();
   };
 
   const resetFields = () => {
-    setAssignmentName("");
-    setAssignmentDescription("");
-    setAssignmentPoints(100);
-    setAssignmentDueDate("");
-    setAvailableFromDate("");
-    setAvailableUntilDate("");
+    setAssignmentFields({
+      title: "",
+      description: "",
+      points: 100,
+      dueDate: "",
+      availableFromDate: "",
+      availableUntilDate: "",
+    });
   };
 
   return (
@@ -87,23 +79,13 @@ export default function Courses({ courses }: { courses: any[] }) {
             <Route path="Home" element={<Home />} />
             <Route path="Modules" element={<Modules />} />
             <Route path="Assignments" element={<Assignments />} />
-            
+
             <Route
               path="Courses/:cid/Assignments/:aid/edit"
               element={
                 <AssignmentEditor
-                  assignmentName={assignmentName}
-                  setAssignmentName={setAssignmentName}
-                  assignmentDescription={assignmentDescription}
-                  setAssignmentDescription={setAssignmentDescription}
-                  assignmentPoints={assignmentPoints}
-                  setAssignmentPoints={setAssignmentPoints}
-                  assignmentDueDate={assignmentDueDate}
-                  setAssignmentDueDate={setAssignmentDueDate}
-                  availableFromDate={availableFromDate}
-                  setAvailableFromDate={setAvailableFromDate}
-                  availableUntilDate={availableUntilDate}
-                  setAvailableUntilDate={setAvailableUntilDate}
+                  assignmentFields={assignmentFields}
+                  setAssignmentField={setAssignmentField}
                   addAssignment={addAssignment}
                   updateAssignment={updateAssignment}
                 />
