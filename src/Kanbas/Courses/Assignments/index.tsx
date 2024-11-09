@@ -8,7 +8,6 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import * as db from "../../Database";
 import {
   addAssignment,
-  editAssignment,
   updateAssignment,
   deleteAssignment,
 } from "./reducer";
@@ -129,13 +128,13 @@ export default function Assignments() {
                       <br />
                       <div className="fs-6">
                         <span className="text-danger fs-6">
-                          Multiple Modules
+                         { assignment.modules}
                         </span>{" "}
                         | <b>Not available until</b>{" "}
                         {assignment.availableFromDate} |
                         <br />
                         <b>Due</b> {assignment.dueDate} | {assignment.points}{" "}
-                        "pts"
+                        pts
                       </div>
                     </div>
                   </div>
