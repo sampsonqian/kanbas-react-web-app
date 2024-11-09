@@ -4,7 +4,7 @@ import AssignmentsButtons from "./AssignmentsButtons";
 import { BsGripVertical } from "react-icons/bs";
 import { RxTriangleDown } from "react-icons/rx";
 import { MdOutlineAssignment } from "react-icons/md";
-import { useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import * as db from "../../Database";
 import {
   addAssignment,
@@ -16,7 +16,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 
 export default function Assignments() {
-  const { aid, cid } = useParams();
+  const { cid } = useParams();
+  const navigate = useNavigate();
 
   const [assignments, setAssignments] = useState<any[]>(db.assignments);
   const [assignmentName, setAssignmentName] = useState("");
@@ -30,25 +31,53 @@ export default function Assignments() {
       ...assignments,
       {
         _id: new Date().getTime().toString(),
-        name: assignmentName,
+        title: assignmentName,
         course: cid,
         description: assignmentDescription,
         points: assignmentPoints,
-        dueDate: assignmentDueDate,
+        due_time: assignmentDueDate,
         availableFromDate: availableFromDate,
         availableUntilDate: availableUntilDate,
       },
     ]);
+    resetFields();
+  };
+
+  const updateAssignment = (aid: string) => {
+    setAssignments(
+      assignments.map((assignment) =>
+        assignment._id === aid
+          ? {
+              ...assignment,
+              title: assignmentName,
+              description: assignmentDescription,
+              points: assignmentPoints,
+              due_time: assignmentDueDate,
+              availableFromDate: availableFromDate,
+              availableUntilDate: availableUntilDate,
+            }
+          : assignment
+      )
+    );
+    resetFields();
+  };
+
+  const resetFields = () => {
     setAssignmentName("");
-    setAssignmentDescription(""),
-      setAssignmentPoints(100),
-      setAssignmentDueDate(""),
-      setAvailableFromDate(""),
-      setAvailableUntilDate("");
+    setAssignmentDescription("");
+    setAssignmentPoints(100);
+    setAssignmentDueDate("");
+    setAvailableFromDate("");
+    setAvailableUntilDate("");
   };
 
   const deleteAssignment = (assignmentId: string) => {
     setAssignments(assignments.filter((a) => a._id !== assignmentId));
+  };
+
+  const handleEditAssignment = (assignmentId: string) => {
+    // Navigate to AssignmentEditor with the assignment ID
+    navigate(`/Kanbas/Courses/${cid}/Assignments/${assignmentId}/edit`);
   };
 
   return (
@@ -67,6 +96,7 @@ export default function Assignments() {
         availableUntilDate={availableUntilDate}
         setAvailableUntilDate={setAvailableUntilDate}
         addAssignment={addAssignment}
+        updateAssignment={updateAssignment}
       />
       <br />
       <br />
@@ -89,21 +119,23 @@ export default function Assignments() {
                     <BsGripVertical className="me-2 fs-3" />
                     <MdOutlineAssignment className="me-3 fs-3 text-success" />
                     <div>
-                      <Link
-                        to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
+                      <span
+                        onClick={() => handleEditAssignment(assignment._id)}
                         className="wd-assignment-link text-black fw-bold"
-                        style={{ textDecoration: "none" }}
+                        style={{ textDecoration: "none", cursor: "pointer" }}
                       >
                         {assignment.title}
-                      </Link>
+                      </span>
                       <br />
                       <div className="fs-6">
                         <span className="text-danger fs-6">
                           Multiple Modules
                         </span>{" "}
-                        | <b>Not available until</b> {assignment.start_time} |
+                        | <b>Not available until</b>{" "}
+                        {assignment.availableFromDate} |
                         <br />
-                        <b>Due</b> {assignment.due_time} | {assignment.points}
+                        <b>Due</b> {assignment.dueDate} | {assignment.points}{" "}
+                        "pts"
                       </div>
                     </div>
                   </div>

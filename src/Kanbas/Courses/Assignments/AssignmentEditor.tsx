@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import * as db from "../../Database";
 
@@ -16,6 +16,7 @@ export default function AssignmentEditor({
   availableUntilDate,
   setAvailableUntilDate,
   addAssignment,
+  updateAssignment
 }: {
   assignmentName: string;
   setAssignmentName: (name: string) => void;
@@ -30,7 +31,34 @@ export default function AssignmentEditor({
   availableUntilDate: string;
   setAvailableUntilDate: (date: string) => void;
   addAssignment: () => void;
+  updateAssignment: (aid: string) => void;
 }) {
+  const { aid } = useParams<{ aid: string }>();
+
+  // Load assignment data if editing an existing assignment
+  useEffect(() => {
+    if (aid) {
+      const assignment = db.assignments.find((a) => a._id === aid);
+      if (assignment) {
+        setAssignmentName(assignment.title);
+        setAssignmentDescription(assignment.description);
+        setAssignmentPoints(assignment.points);
+        setAssignmentDueDate(assignment.dueDate);
+        setAvailableFromDate(assignment.availableFromDate);
+        setAvailableUntilDate(assignment.availableUntilDate);
+      }
+    }
+  }, [aid, setAssignmentName, setAssignmentDescription, setAssignmentPoints, setAssignmentDueDate, setAvailableFromDate, setAvailableUntilDate]);
+
+  const handleSave = () => {
+    if (aid) {
+      // If editing, update the existing assignment
+      updateAssignment(aid);
+    } else {
+      // If adding a new assignment
+      addAssignment();
+    }
+  };
   return (
     <div
       id="wd-add-assignment-dialog"
@@ -156,7 +184,7 @@ export default function AssignmentEditor({
                 Cancel
               </button>
               <button
-                onClick={addAssignment}
+                onClick={handleSave}
                 type="button"
                 data-bs-dismiss="modal"
                 className="btn btn-danger"

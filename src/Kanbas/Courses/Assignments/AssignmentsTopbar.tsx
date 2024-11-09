@@ -15,6 +15,7 @@ export default function AssignmentsTopbar({
   availableUntilDate,
   setAvailableUntilDate,
   addAssignment,
+  updateAssignment,
 }: {
   assignmentName: string;
   setAssignmentName: (name: string) => void;
@@ -29,7 +30,10 @@ export default function AssignmentsTopbar({
   availableUntilDate: string;
   setAvailableUntilDate: (date: string) => void;
   addAssignment: () => void;
+  updateAssignment: (aid: string) => void;
 }) {
+  
+
   return (
     <div id="wd-assignments-topbar" className="text-nowrap">
       <div className="btn btn-lg me-1 float-start border">
@@ -78,6 +82,7 @@ export default function AssignmentsTopbar({
         availableUntilDate={availableUntilDate}
         setAvailableUntilDate={setAvailableUntilDate}
         addAssignment={addAssignment}
+        updateAssignment={updateAssignment}
       />
     </div>
   );
