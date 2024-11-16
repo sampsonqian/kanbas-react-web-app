@@ -27,7 +27,7 @@ export default function AssignmentEditor({
   console.log("Rendering AssignmentEditor with aid:", aid, "and cid:", cid);
 
   
-  // Load assignment data if editing an existing assignment
+  // // Load assignment data if editing an existing assignment
   useEffect(() => {
     if (aid) {
       const assignment = db.assignments.find((a) => a._id === aid);
@@ -42,7 +42,7 @@ export default function AssignmentEditor({
         console.error("No assignment found with the given aid:", aid);
       }
     }
-  }, [aid, setAssignmentField]);
+  }, [aid]);
 
   const handleSave = () => {
     if (aid) {
@@ -52,7 +52,6 @@ export default function AssignmentEditor({
     }
     navigate(`/Kanbas/Courses/${cid}/Assignments`);
   };
-
 
 
   return (

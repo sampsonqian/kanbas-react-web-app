@@ -1,14 +1,39 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { assignments } from "../../Database";
-const initialState = {
+
+export interface IAssignment {
+  _id: string;
+  title: string;
+  course: string;
+  description: string;
+  modules: string;
+  availableFromDate: string;
+  availableUntilDate: string;
+  dueDate: string;
+  points: number;
+}
+
+export interface IAssignmentsState {
+  assignments: IAssignment[];
+  showAddAssignmentPanel: boolean;
+  showEditAssignmentPanel: boolean;
+  editingAssignment: IAssignment | null;
+  searchQuery: string;
+}
+
+const initialState: IAssignmentsState = {
   assignments: assignments,
+  showAddAssignmentPanel: false,
+  showEditAssignmentPanel: false,
+  editingAssignment: null,
+    searchQuery: "",
 };
 const assignmentsSlice = createSlice({
   name: "assignments",
   initialState,
   reducers: {
     addAssignment: (state, { payload: assignment }) => {
-      const newAssignment: any = {
+      const newAssignment: IAssignment = {
         _id: new Date().getTime().toString(),
         title: assignment.title,
         description: assignment.description,
@@ -17,8 +42,10 @@ const assignmentsSlice = createSlice({
         availableFromDate:assignment.availableFromDate,
         availableUntilDate: assignment.availableUntilDate,
         course: assignment.course,
+        modules: ''
       };
-      state.assignments = [...state.assignments, newAssignment] as any;
+      console.log(newAssignment)
+      state.assignments = [...state.assignments, newAssignment];
     },
     deleteAssignment: (state, { payload: assignmentId }) => {
       state.assignments = state.assignments.filter(
@@ -29,6 +56,18 @@ const assignmentsSlice = createSlice({
       state.assignments = state.assignments.map((a: any) =>
         a._id === assignment._id ? assignment : a
       ) as any;
+    },
+    toggleAddAssignmentPanel: (state, {payload}) => {
+        state.showAddAssignmentPanel = payload;
+    },
+    setEditingAssignment: (state, { payload }) => {
+        state.editingAssignment = payload;
+    },
+    toggleEditAssignmentPanel: (state, { payload }) => {
+        state.showEditAssignmentPanel = payload;
+    },
+    setSearchQuery: (state, { payload }) => {
+        state.searchQuery = payload;
     }
     
     
@@ -37,7 +76,10 @@ const assignmentsSlice = createSlice({
 export const {
   addAssignment,
   deleteAssignment,
+    setEditingAssignment,
   updateAssignment,
- 
+ toggleAddAssignmentPanel,
+    toggleEditAssignmentPanel,
+    setSearchQuery
 } = assignmentsSlice.actions;
 export default assignmentsSlice.reducer;

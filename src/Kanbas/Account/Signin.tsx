@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { setCurrentUser } from "./reducer";
 import { useDispatch } from "react-redux";
@@ -12,9 +12,19 @@ export default function Signin() {
     const user = db.users.find(
       (u: any) => u.username === credentials.username && u.password === credentials.password);
     if (!user) return;
+    localStorage.setItem('user', JSON.stringify(user));
     dispatch(setCurrentUser(user));
     navigate("/Kanbas/Dashboard");
   };
+
+    useEffect(() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            dispatch(setCurrentUser(user));
+            navigate("/Kanbas/Dashboard");
+        }
+    }, []);
 
   return (
     <div id="wd-signin-screen">

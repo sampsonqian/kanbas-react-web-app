@@ -14,6 +14,7 @@ export default function Profile() {
   };
   const signout = () => {
     dispatch(setCurrentUser(null));
+    localStorage.removeItem('user');
     navigate("/Kanbas/Account/Signin");
   };
   useEffect(() => { fetchProfile(); }, []);

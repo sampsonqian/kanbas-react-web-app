@@ -7,12 +7,27 @@ import { MdOutlineAssignment } from "react-icons/md";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import * as db from "../../Database";
 import { useState } from "react";
+import AddAssignmentPanel from "./AddAssignmentPanel";
+import { useDispatch, useSelector } from "react-redux";
+import assignmentsReducer, {
+  deleteAssignment,
+  IAssignment,
+  setEditingAssignment,
+  toggleEditAssignmentPanel,
+} from "./reducer";
+import EditAssignmentPanel from "./EditAssignmentPanel";
 
 export default function Assignments() {
-  const {aid, cid } = useParams();
+  const { aid, cid } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [assignments, setAssignments] = useState<any[]>(db.assignments);
+  const assignments = useSelector(
+    (state: any) => state.assignmentsReducer.assignments
+  );
+  const searchQuery = useSelector(
+    (state: any) => state.assignmentsReducer.searchQuery
+  );
   const [assignmentFields, setAssignmentFields] = useState({
     title: "",
     description: "",
@@ -36,16 +51,11 @@ export default function Assignments() {
       course: cid,
       ...assignmentFields,
     };
-    setAssignments([...assignments, newAssignment]);
+
     resetFields();
   };
 
   const updateAssignment = (aid: string) => {
-    setAssignments(
-      assignments.map((assignment) =>
-        assignment._id === aid ? { ...assignment, ...assignmentFields } : assignment
-      )
-    );
     resetFields();
   };
 
@@ -60,17 +70,24 @@ export default function Assignments() {
     });
   };
 
-  const deleteAssignment = (assignmentId: string) => {
-    setAssignments(assignments.filter((a) => a._id !== assignmentId));
+  const handleDeleteAssignment = (assignmentId: string) => {
+    dispatch(deleteAssignment(assignmentId));
   };
 
   const handleEditAssignment = (assignmentId: string) => {
-    console.log("Navigating to assignment with ID:", assignmentId); 
-    navigate(`/Kanbas/Courses/${cid}/Assignments/${assignmentId}/edit`);
+    const assignment = assignments.find((a: any) => a._id === assignmentId);
+    if (assignment) {
+      dispatch(setEditingAssignment(assignment));
+      dispatch(toggleEditAssignmentPanel(true));
+    }
   };
 
   return (
     <div id="wd-assignments">
+      <AddAssignmentPanel />
+
+      <EditAssignmentPanel />
+
       <AssignmentsTopbar
         assignmentFields={assignmentFields}
         setAssignmentField={setAssignmentField}
@@ -90,23 +107,27 @@ export default function Assignments() {
             <AssignmentsButtons />
           </div>
           {assignments
-            .filter((assignment: any) => assignment.course === cid)
+            .filter((assignment: IAssignment) => assignment.course === cid)
+            .filter((assignment: IAssignment) =>
+              assignment.title.toLowerCase().includes(searchQuery.toLowerCase())
+            )
             .map((assignment: any) => (
-             
-              <ul key={assignment._id} className="wd-lessons list-group rounded-0">
+              <ul
+                key={assignment._id}
+                className="wd-lessons list-group rounded-0"
+              >
                 <li className="wd-lesson list-group-item p-3 ps-1 d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center">
                     <BsGripVertical className="me-2 fs-3" />
                     <MdOutlineAssignment className="me-3 fs-3 text-success" />
-                    <div>
-                    <Link
-                        to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}/edit`}
-                        onClick={() => console.log("Clicked assignment ID:", assignment._id)}
-                        className="wd-assignment-link text-black fw-bold"
+                    <div onClick={() => handleEditAssignment(assignment._id)}>
+                      <span
+                        //onClick={() => handleEditAssignment(assignment._id)}
+                        className="wd-assignment-link text-black fw-bold cursor-pointer"
                         style={{ textDecoration: "none" }}
                       >
                         {assignment.title}
-                      </Link>
+                      </span>
                       <br />
                       <div className="fs-6">
                         <span className="text-danger fs-6">
@@ -115,14 +136,16 @@ export default function Assignments() {
                         | <b>Not available until</b>{" "}
                         {assignment.availableFromDate} |
                         <br />
-                        <b>Due</b> {assignment.dueDate} | {assignment.points} pts
+                        <b>Due</b> {assignment.dueDate} | {assignment.points}{" "}
+                        pts
                       </div>
                     </div>
                   </div>
                   <div>
                     <AssignmentControlButtons
+                      editAssignment={handleEditAssignment}
                       assignmentId={assignment._id}
-                      deleteAssignment={deleteAssignment}
+                      deleteAssignment={handleDeleteAssignment}
                     />
                   </div>
                 </li>

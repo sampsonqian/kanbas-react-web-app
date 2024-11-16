@@ -1,6 +1,8 @@
 import { FaPlus } from "react-icons/fa6";
 import { CiSearch } from "react-icons/ci";
 import AssignmentEditor from "./AssignmentEditor";
+import {useDispatch} from "react-redux";
+import {setSearchQuery, toggleAddAssignmentPanel} from "./reducer";
 
 export default function AssignmentsTopbar({
   assignmentFields,
@@ -20,14 +22,29 @@ export default function AssignmentsTopbar({
   addAssignment: () => void;
   updateAssignment: (aid: string) => void;
 }) {
+
+  const dispatch = useDispatch();
+
+
+  const handleClickOpenAddAssignment = () => {
+      dispatch(toggleAddAssignmentPanel(true));
+  }
+
   return (
     <div id="wd-assignments-topbar" className="text-nowrap">
+
+
+
+
       <div className="btn btn-lg me-1 float-start border">
         <CiSearch
           className="position-relative me-2"
           style={{ bottom: "1px" }}
         />
         <input
+            onChange={(e: any) => {
+                dispatch(setSearchQuery(e.target.value));
+            }}
           id="wd-search-assignment"
           placeholder="Search..."
           style={{
@@ -46,20 +63,15 @@ export default function AssignmentsTopbar({
         Group
       </button>
       <button
-        id="wd-collapse-all"
+          onClick={() => {
+              handleClickOpenAddAssignment();
+          }}
         className="btn btn-lg btn-danger me-1 float-end"
-        data-bs-toggle="modal"
-        data-bs-target="#wd-add-assignment-dialog"
       >
         <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
         Assignment
       </button>
-      <AssignmentEditor
-        assignmentFields={assignmentFields}
-        setAssignmentField={setAssignmentField}
-        addAssignment={addAssignment}
-        updateAssignment={updateAssignment}
-      />
+
     </div>
   );
 }

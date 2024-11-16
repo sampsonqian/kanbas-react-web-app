@@ -81,7 +81,7 @@ export default function Courses({ courses }: { courses: any[] }) {
             <Route path="Assignments" element={<Assignments />} />
 
             <Route
-              path="Courses/:cid/Assignments/:aid/edit"
+              path="Assignments/:aid/edit"
               element={
                 <AssignmentEditor
                   assignmentFields={assignmentFields}
