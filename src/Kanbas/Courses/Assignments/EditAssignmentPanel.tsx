@@ -11,6 +11,7 @@ import {
   convertToDateTimeLocalFormat,
   convertToReadableDateTime,
 } from '../../../utils';
+import * as assignmentsClient from "./client";
 
 interface IAssignment {
   _id: string;
@@ -80,6 +81,21 @@ const EditAssignmentPanel: React.FC<EditAssignmentProps> = () => {
     dispatch(toggleEditAssignmentPanel(false));
   };
 
+  const saveAssignment = async (assignment: any) => {
+    const updatedAssignment = {
+      ...assignment,
+      availableFromDate: convertToReadableDateTime(assignment.availableFromDate),
+      availableUntilDate: convertToReadableDateTime(assignment.availableUntilDate),
+      dueDate: convertToReadableDateTime(assignment.dueDate),
+    };
+  
+    await assignmentsClient.updateAssignment(updatedAssignment);
+  
+    dispatch(updateAssignment(updatedAssignment));
+    dispatch(toggleEditAssignmentPanel(false));
+  };
+  
+
   useEffect(() => {
     if (editingAssignment) {
       setFormData({
@@ -101,7 +117,7 @@ const EditAssignmentPanel: React.FC<EditAssignmentProps> = () => {
         <Modal.Title>Edit Assignment</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={saveAssignment}>
           {/* Assignment Name */}
           <Row className="mb-3">
             <Col xs={12}>

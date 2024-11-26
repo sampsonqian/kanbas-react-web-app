@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addAssignment, toggleAddAssignmentPanel } from './reducer';
 import { useParams } from 'react-router-dom';
 import { convertToReadableDateTime } from '../../../utils';
+import * as coursesClient from "../client";
+
 
 interface IAssignment {
   _id: string;
@@ -29,28 +31,30 @@ const AddAssignmentPanel: React.FC<AddAssignmentProps> = () => {
     dispatch(toggleAddAssignmentPanel(false));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
 
-    if (formRef.current) {
-      const formData = new FormData(formRef.current);
-
-      const newAssignment: IAssignment = {
-        _id: new Date().getTime().toString(),
-        title: formData.get('assignmentName') as string,
-        description: formData.get('description') as string,
-        points: formData.get('points') as string,
-        dueDate: convertToReadableDateTime(formData.get('dueDate') as string),
-        availableFromDate: convertToReadableDateTime(formData.get('availableFrom') as string),
-        availableUntilDate: convertToReadableDateTime(formData.get('until') as string),
-        modules: 'M101',
-        course: cid as string,
-      };
-
-      dispatch(addAssignment(newAssignment));
-      dispatch(toggleAddAssignmentPanel(false));
-    }
+  const createAssignmentForCourse = async () => {
+    if (!cid || !formRef.current) return;
+  
+    const formData = new FormData(formRef.current);
+  
+    const newAssignment: IAssignment = {
+      _id: new Date().getTime().toString(),
+      title: formData.get('assignmentName') as string,
+      description: formData.get('description') as string,
+      points: formData.get('points') as string,
+      dueDate: convertToReadableDateTime(formData.get('dueDate') as string),
+      availableFromDate: convertToReadableDateTime(formData.get('availableFrom') as string),
+      availableUntilDate: convertToReadableDateTime(formData.get('until') as string),
+      modules: 'M101',
+      course: cid as string,
+    };
+  
+    const assignment = await coursesClient.createAssignmentsForCourse(cid, newAssignment);
+  
+    dispatch(addAssignment(assignment));
+    dispatch(toggleAddAssignmentPanel(false));
   };
+  
 
   return (
     <Modal show={showAddAssignmentPanel} onHide={handleClose} centered>
@@ -58,7 +62,7 @@ const AddAssignmentPanel: React.FC<AddAssignmentProps> = () => {
         <Modal.Title>Add Assignment</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form ref={formRef} onSubmit={handleSubmit}>
+        <form ref={formRef} onSubmit={createAssignmentForCourse}>
           {/* Assignment Name */}
           <Row className="mb-3">
             <Col xs={12}>

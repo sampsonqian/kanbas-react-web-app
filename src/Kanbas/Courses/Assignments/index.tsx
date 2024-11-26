@@ -5,22 +5,40 @@ import { BsGripVertical } from "react-icons/bs";
 import { RxTriangleDown } from "react-icons/rx";
 import { MdOutlineAssignment } from "react-icons/md";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import * as db from "../../Database";
-import { useState } from "react";
+//import * as db from "../../Database";
+import { useState, useEffect } from "react";
 import AddAssignmentPanel from "./AddAssignmentPanel";
 import { useDispatch, useSelector } from "react-redux";
 import assignmentsReducer, {
+  addAssignment,
   deleteAssignment,
   IAssignment,
   setEditingAssignment,
   toggleEditAssignmentPanel,
 } from "./reducer";
 import EditAssignmentPanel from "./EditAssignmentPanel";
+import * as coursesClient from "../client";
+import * as assignmentsClient from "./client";
 
 export default function Assignments() {
   const { aid, cid } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const fetchAssignments = async () => {
+    const assignments = await coursesClient.findAssignmentsForCourse(cid as string);
+    dispatch(setEditingAssignment(assignments));
+  };
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+  const removeAssignment = async (assignmentId: string) => {
+    await assignmentsClient.deleteModule(assignmentId);
+    dispatch(deleteAssignment(assignmentId));
+  };
+
+
+
 
   const assignments = useSelector(
     (state: any) => state.assignmentsReducer.assignments
@@ -107,10 +125,10 @@ export default function Assignments() {
             <AssignmentsButtons />
           </div>
           {assignments
-            .filter((assignment: IAssignment) => assignment.course === cid)
-            .filter((assignment: IAssignment) =>
-              assignment.title.toLowerCase().includes(searchQuery.toLowerCase())
-            )
+            //.filter((assignment: IAssignment) => assignment.course === cid)
+            //.filter((assignment: IAssignment) =>
+              //assignment.title.toLowerCase().includes(searchQuery.toLowerCase())
+            //)
             .map((assignment: any) => (
               <ul
                 key={assignment._id}
@@ -145,7 +163,9 @@ export default function Assignments() {
                     <AssignmentControlButtons
                       editAssignment={handleEditAssignment}
                       assignmentId={assignment._id}
-                      deleteAssignment={handleDeleteAssignment}
+                      //deleteAssignment={handleDeleteAssignment}
+                      deleteAssignment={(assignmentId) => removeAssignment(assignmentId)}
+
                     />
                   </div>
                 </li>

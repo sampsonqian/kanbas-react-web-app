@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { assignments } from "../../Database";
+//import { assignments } from "../../Database";
 
 export interface IAssignment {
   _id: string;
@@ -22,11 +22,11 @@ export interface IAssignmentsState {
 }
 
 const initialState: IAssignmentsState = {
-  assignments: assignments,
+  assignments: [],
   showAddAssignmentPanel: false,
   showEditAssignmentPanel: false,
   editingAssignment: null,
-    searchQuery: "",
+  searchQuery: "",
 };
 const assignmentsSlice = createSlice({
   name: "assignments",
@@ -37,14 +37,14 @@ const assignmentsSlice = createSlice({
         _id: new Date().getTime().toString(),
         title: assignment.title,
         description: assignment.description,
-        points:assignment.points,
-        dueDate:assignment.dueDate,
-        availableFromDate:assignment.availableFromDate,
+        points: assignment.points,
+        dueDate: assignment.dueDate,
+        availableFromDate: assignment.availableFromDate,
         availableUntilDate: assignment.availableUntilDate,
         course: assignment.course,
-        modules: ''
+        modules: "",
       };
-      console.log(newAssignment)
+      console.log(newAssignment);
       state.assignments = [...state.assignments, newAssignment];
     },
     deleteAssignment: (state, { payload: assignmentId }) => {
@@ -57,29 +57,27 @@ const assignmentsSlice = createSlice({
         a._id === assignment._id ? assignment : a
       ) as any;
     },
-    toggleAddAssignmentPanel: (state, {payload}) => {
-        state.showAddAssignmentPanel = payload;
+    toggleAddAssignmentPanel: (state, { payload }) => {
+      state.showAddAssignmentPanel = payload;
     },
     setEditingAssignment: (state, { payload }) => {
-        state.editingAssignment = payload;
+      state.editingAssignment = payload;
     },
     toggleEditAssignmentPanel: (state, { payload }) => {
-        state.showEditAssignmentPanel = payload;
+      state.showEditAssignmentPanel = payload;
     },
     setSearchQuery: (state, { payload }) => {
-        state.searchQuery = payload;
-    }
-    
-    
+      state.searchQuery = payload;
+    },
   },
 });
 export const {
   addAssignment,
   deleteAssignment,
-    setEditingAssignment,
+  setEditingAssignment,
   updateAssignment,
- toggleAddAssignmentPanel,
-    toggleEditAssignmentPanel,
-    setSearchQuery
+  toggleAddAssignmentPanel,
+  toggleEditAssignmentPanel,
+  setSearchQuery,
 } = assignmentsSlice.actions;
 export default assignmentsSlice.reducer;
