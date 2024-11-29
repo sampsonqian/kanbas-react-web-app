@@ -32,6 +32,9 @@ const assignmentsSlice = createSlice({
   name: "assignments",
   initialState,
   reducers: {
+    setAssignments: (state, action) => {
+      state.assignments = action.payload;
+    },
     addAssignment: (state, { payload: assignment }) => {
       const newAssignment: IAssignment = {
         _id: new Date().getTime().toString(),
@@ -72,6 +75,7 @@ const assignmentsSlice = createSlice({
   },
 });
 export const {
+  setAssignments,
   addAssignment,
   deleteAssignment,
   setEditingAssignment,

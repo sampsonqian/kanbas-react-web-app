@@ -4,7 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { setEnrollments, enrollCourse, unenrollCourse } from "./enrollmentReducer";
+import {
+  setEnrollments,
+  enrollCourse,
+  unenrollCourse,
+} from "./enrollmentReducer";
 import * as coursesClient from "./Courses/client";
 
 export default function Dashboard({
@@ -38,8 +42,12 @@ export default function Dashboard({
   // Fetch enrollments on component mount
   useEffect(() => {
     const fetchEnrollments = async () => {
+        
       try {
-        const fetchedEnrollments = await coursesClient.fetchEnrollmentsForUser(currentUser._id);
+        const fetchedEnrollments = await coursesClient.fetchEnrollmentsForUser(
+          currentUser._id
+        );
+        
         dispatch(setEnrollments(fetchedEnrollments)); // Populate Redux state with enrollments
       } catch (error) {
         console.error("Failed to fetch enrollments:", error);
@@ -85,6 +93,7 @@ export default function Dashboard({
       try {
         const newEnrollment = await coursesClient.enrollInCourse(
           currentUser._id,
+         
           courseId
         ); // Call the API to enroll
         dispatch(enrollCourse(newEnrollment)); // Dispatch to add to Redux state
@@ -156,13 +165,13 @@ export default function Dashboard({
         <div className="row row-cols-1 row-cols-md-5 g-4">
           {courses.map((course) => (
             <div key={course._id} className="col" style={{ width: "300px" }}>
-              <div className="card rounded-3 overflow-hidden">
-                <img
-                  src={course.image}
-                  alt={course._id}
-                  width="100%"
-                  height={160}
-                />
+              <div
+                className="card rounded-3 overflow-hidden"
+                onClick={() => {
+                  navigate(`/Kanbas/Courses/${course._id}/Home`);
+                }}
+              >
+                <img src="/images/reactjs.jpg" width="100%" height={160} />
                 <div className="card-body">
                   <h5 className="wd-dashboard-course-title card-title">
                     {course.name}
@@ -208,9 +217,7 @@ export default function Dashboard({
                     <>
                       <button
                         className={`btn ${
-                          isEnrolled(course._id)
-                            ? "btn-danger"
-                            : "btn-success"
+                          isEnrolled(course._id) ? "btn-danger" : "btn-success"
                         } float-end me-2`}
                         onClick={(event) => {
                           event.preventDefault();

@@ -7,10 +7,6 @@ import {
   updateAssignment,
 } from './reducer';
 import { useParams } from 'react-router-dom';
-import {
-  convertToDateTimeLocalFormat,
-  convertToReadableDateTime,
-} from '../../../utils';
 import * as assignmentsClient from "./client";
 
 interface IAssignment {
@@ -63,53 +59,30 @@ const EditAssignmentPanel: React.FC<EditAssignmentProps> = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    dispatch(
-      updateAssignment({
-        ...formData,
-        availableFromDate: convertToReadableDateTime(
-          formData.availableFromDate
-        ),
-        availableUntilDate: convertToReadableDateTime(
-          formData.availableUntilDate
-        ),
-        dueDate: convertToReadableDateTime(formData.dueDate),
-      })
-    );
-    dispatch(toggleEditAssignmentPanel(false));
-  };
-
-  const saveAssignment = async (assignment: any) => {
-    const updatedAssignment = {
-      ...assignment,
-      availableFromDate: convertToReadableDateTime(assignment.availableFromDate),
-      availableUntilDate: convertToReadableDateTime(assignment.availableUntilDate),
-      dueDate: convertToReadableDateTime(assignment.dueDate),
-    };
-  
+    const updatedAssignment = { ...formData };
     await assignmentsClient.updateAssignment(updatedAssignment);
-  
+
     dispatch(updateAssignment(updatedAssignment));
     dispatch(toggleEditAssignmentPanel(false));
   };
-  
 
   useEffect(() => {
+    //const validDate = (date: string) =>
+     // date ? new Date(date).toISOString().slice(0, 16) : ""; // Default to empty string if invalid
+  
     if (editingAssignment) {
       setFormData({
         ...editingAssignment,
-        availableFromDate: convertToDateTimeLocalFormat(
-          editingAssignment.availableFromDate
-        ),
-        availableUntilDate: convertToDateTimeLocalFormat(
-          editingAssignment.availableUntilDate
-        ),
-        dueDate: convertToDateTimeLocalFormat(editingAssignment.dueDate),
+        availableFromDate: (editingAssignment.availableFromDate),
+        availableUntilDate: (editingAssignment.availableUntilDate),
+        dueDate: (editingAssignment.dueDate),
       });
     }
   }, [editingAssignment]);
+  
 
   return (
     <Modal show={showEditAssignmentPanel} onHide={handleClose} centered>
@@ -117,7 +90,7 @@ const EditAssignmentPanel: React.FC<EditAssignmentProps> = () => {
         <Modal.Title>Edit Assignment</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form onSubmit={saveAssignment}>
+        <form onSubmit={handleSubmit}>
           {/* Assignment Name */}
           <Row className="mb-3">
             <Col xs={12}>

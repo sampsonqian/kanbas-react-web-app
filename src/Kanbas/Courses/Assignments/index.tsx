@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import AddAssignmentPanel from "./AddAssignmentPanel";
 import { useDispatch, useSelector } from "react-redux";
 import assignmentsReducer, {
+  setAssignments,
   addAssignment,
   deleteAssignment,
   IAssignment,
@@ -26,19 +27,21 @@ export default function Assignments() {
   const dispatch = useDispatch();
 
   const fetchAssignments = async () => {
-    const assignments = await coursesClient.findAssignmentsForCourse(cid as string);
-    dispatch(setEditingAssignment(assignments));
+    const assignments = await coursesClient.findAssignmentsForCourse(
+      cid as string
+    );
+    dispatch(setAssignments(assignments));
   };
   useEffect(() => {
     fetchAssignments();
   }, []);
+
+
+  
   const removeAssignment = async (assignmentId: string) => {
     await assignmentsClient.deleteModule(assignmentId);
     dispatch(deleteAssignment(assignmentId));
   };
-
-
-
 
   const assignments = useSelector(
     (state: any) => state.assignmentsReducer.assignments
@@ -127,7 +130,7 @@ export default function Assignments() {
           {assignments
             //.filter((assignment: IAssignment) => assignment.course === cid)
             //.filter((assignment: IAssignment) =>
-              //assignment.title.toLowerCase().includes(searchQuery.toLowerCase())
+            // assignment.title.toLowerCase().includes(searchQuery.toLowerCase())
             //)
             .map((assignment: any) => (
               <ul
@@ -164,8 +167,9 @@ export default function Assignments() {
                       editAssignment={handleEditAssignment}
                       assignmentId={assignment._id}
                       //deleteAssignment={handleDeleteAssignment}
-                      deleteAssignment={(assignmentId) => removeAssignment(assignmentId)}
-
+                      deleteAssignment={(assignmentId) =>
+                        removeAssignment(assignmentId)
+                      }
                     />
                   </div>
                 </li>
