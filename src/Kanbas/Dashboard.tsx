@@ -42,12 +42,11 @@ export default function Dashboard({
   // Fetch enrollments on component mount
   useEffect(() => {
     const fetchEnrollments = async () => {
-        
       try {
         const fetchedEnrollments = await coursesClient.fetchEnrollmentsForUser(
           currentUser._id
         );
-        
+
         dispatch(setEnrollments(fetchedEnrollments)); // Populate Redux state with enrollments
       } catch (error) {
         console.error("Failed to fetch enrollments:", error);
@@ -58,6 +57,7 @@ export default function Dashboard({
       fetchEnrollments();
     }
   }, [currentUser, dispatch]);
+
 
   // Toggle enrollment view
   const enrollmentViewToggle = () => {
@@ -93,7 +93,7 @@ export default function Dashboard({
       try {
         const newEnrollment = await coursesClient.enrollInCourse(
           currentUser._id,
-         
+
           courseId
         ); // Call the API to enroll
         dispatch(enrollCourse(newEnrollment)); // Dispatch to add to Redux state
@@ -163,83 +163,87 @@ export default function Dashboard({
       <hr />
       <div className="row" id="wd-dashboard-courses">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-          {courses.map((course) => (
-            <div key={course._id} className="col" style={{ width: "300px" }}>
-              <div
-                className="card rounded-3 overflow-hidden"
-                onClick={() => {
-                  navigate(`/Kanbas/Courses/${course._id}/Home`);
-                }}
-              >
-                <img src="/images/reactjs.jpg" width="100%" height={160} />
-                <div className="card-body">
-                  <h5 className="wd-dashboard-course-title card-title">
-                    {course.name}
-                  </h5>
-                  <p
-                    className="wd-dashboard-course-title card-text overflow-y-hidden"
-                    style={{ maxHeight: 100 }}
-                  >
-                    {course.description}
-                  </p>
-
-                  {isFaculty && (
-                    <>
-                      <Link
-                        to={`/Kanbas/Courses/${course._id}/Home`}
-                        className="btn btn-primary me-2"
-                      >
-                        Go
-                      </Link>
-                      <button
-                        onClick={(event) => {
-                          event.preventDefault();
-                          deleteCourse(course._id);
-                        }}
-                        className="btn btn-danger float-end"
-                        id="wd-delete-course-click"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        id="wd-edit-course-click"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setCourse(course);
-                        }}
-                        className="btn btn-warning me-2 float-end"
-                      >
-                        Edit
-                      </button>
-                    </>
-                  )}
-                  {isStudent && (
-                    <>
-                      <button
-                        className={`btn ${
-                          isEnrolled(course._id) ? "btn-danger" : "btn-success"
-                        } float-end me-2`}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          handleEnroll(course._id);
-                        }}
-                      >
-                        {isEnrolled(course._id) ? "Unenroll" : "Enroll"}
-                      </button>
-                      {isEnrolled(course._id) && (
+          {courses
+            // Default to show only enrolled courses unless "All Courses" is clicked
+            .filter((course) => showAllCourses || isEnrolled(course._id))
+            .map((course) => (
+              <div key={course._id} className="col" style={{ width: "300px" }}>
+                <div
+                  className="card rounded-3 overflow-hidden"
+                  onClick={() => {
+                    navigate(`/Kanbas/Courses/${course._id}/Home`);
+                  }}
+                >
+                  <img src="/images/reactjs.jpg" width="100%" height={160} />
+                  <div className="card-body">
+                    <h5 className="wd-dashboard-course-title card-title">
+                      {course.name}
+                    </h5>
+                    <p
+                      className="wd-dashboard-course-title card-text overflow-y-hidden"
+                      style={{ maxHeight: 100 }}
+                    >
+                      {course.description}
+                    </p>
+                    {isFaculty && (
+                      <>
                         <Link
                           to={`/Kanbas/Courses/${course._id}/Home`}
                           className="btn btn-primary me-2"
                         >
                           Go
                         </Link>
-                      )}
-                    </>
-                  )}
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            deleteCourse(course._id);
+                          }}
+                          className="btn btn-danger float-end"
+                          id="wd-delete-course-click"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          id="wd-edit-course-click"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setCourse(course);
+                          }}
+                          className="btn btn-warning me-2 float-end"
+                        >
+                          Edit
+                        </button>
+                      </>
+                    )}
+                    {isStudent && (
+                      <>
+                        <button
+                          className={`btn ${
+                            isEnrolled(course._id)
+                              ? "btn-danger"
+                              : "btn-success"
+                          } float-end me-2`}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleEnroll(course._id);
+                          }}
+                        >
+                          {isEnrolled(course._id) ? "Unenroll" : "Enroll"}
+                        </button>
+                        {isEnrolled(course._id) && (
+                          <Link
+                            to={`/Kanbas/Courses/${course._id}/Home`}
+                            className="btn btn-primary me-2"
+                          >
+                            Go
+                          </Link>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
