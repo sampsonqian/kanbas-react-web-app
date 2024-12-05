@@ -46,6 +46,7 @@ export const createAssignmentsForCourse = async (
 
 // Enroll a user in a course
 export const enrollInCourse = async (userId: string, courseId: string) => {
+  console.log(userId);
   const response = await axios.post(`${ENROLLMENTS_API}/${Date.now()}`, {
     userId,
     courseId,
@@ -54,13 +55,15 @@ export const enrollInCourse = async (userId: string, courseId: string) => {
 };
 
 // Unenroll a user from a course
-export const unenrollFromCourse = async (enrollmentId: string) => {
-  const response = await axios.delete(`${ENROLLMENTS_API}/${enrollmentId}`);
+export const unenrollFromCourse = async (userId: string, courseId: string) => {
+    //console.log(enrollmentId);
+  const response = await axios.delete(`${ENROLLMENTS_API}/${userId}/${courseId}`);
   return response.data; // Return the status or any response
 };
 
-
 export const fetchEnrollmentsForUser = async (userId: string) => {
-    const response = await axios.get(`${REMOTE_SERVER}/api/enrollments/${userId}`);
-    return response.data;
-  };
+  const response = await axios.get(
+    `${REMOTE_SERVER}/api/enrollments/${userId}`
+  );
+  return response.data;
+};
