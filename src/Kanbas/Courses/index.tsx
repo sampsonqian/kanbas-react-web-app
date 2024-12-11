@@ -3,14 +3,16 @@ import Modules from "./Modules";
 import Home from "./Home";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/AssignmentEditor";
-import PeopleTable from "./People/Table";
+
 import { Navigate, Route, Routes, useParams, useLocation } from "react-router";
 import { FaAlignJustify } from "react-icons/fa";
 import { useState } from "react";
 import * as db from "../Database";
+import People from "./People/People";
 
 export default function Courses({ courses }: { courses: any[] }) {
   const { cid } = useParams();
+  console.log("cid in Courses:", cid);
   const course = courses.find((course) => course._id === cid);
   const { pathname } = useLocation();
 
@@ -91,7 +93,7 @@ export default function Courses({ courses }: { courses: any[] }) {
                 />
               }
             />
-            <Route path="People" element={<PeopleTable />} />
+            <Route path="People" element={<People />} />
           </Routes>
         </div>
       </div>
