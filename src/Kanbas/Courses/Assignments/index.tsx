@@ -151,10 +151,7 @@ export default function Assignments() {
                       </span>
                       <br />
                       <div className="fs-6">
-                        <span className="text-danger fs-6">
-                          {assignment.modules}
-                        </span>{" "}
-                        | <b>Not available until</b>{" "}
+                         <b>Not available until</b>{" "}
                         {assignment.availableFromDate} |
                         <br />
                         <b>Due</b> {assignment.dueDate} | {assignment.points}{" "}

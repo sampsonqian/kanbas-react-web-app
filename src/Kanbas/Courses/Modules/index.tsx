@@ -12,12 +12,19 @@ import { useSelector, useDispatch } from "react-redux";
 
 export default function Modules() {
   const { cid } = useParams();
+  console.log("cid in Modules:", cid);
   const [moduleName, setModuleName] = useState("");
   const { modules } = useSelector((state: any) => state.modulesReducer);
   const dispatch = useDispatch();
   const fetchModules = async () => {
-    const modules = await coursesClient.findModulesForCourse(cid as string);
-    dispatch(setModules(modules));
+    try {
+      console.log("Fetching modules for course:", cid);
+      const modules = await coursesClient.findModulesForCourse(cid as string);
+      console.log("Modules fetched:", modules);
+      dispatch(setModules(modules));
+    } catch (error) {
+      console.error("Error fetching modules:", error);
+    }
   };
   useEffect(() => {
     fetchModules();
